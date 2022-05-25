@@ -1,20 +1,74 @@
 import { useRouter } from "next/router";
-import { GetStaticProps, GetStaticPaths } from 'next'
+import { GetStaticProps, GetStaticPaths, NextPage } from 'next'
 import { Layout } from "../../components/layout";
-import { FC } from "react";
+import { pokeApi } from "../../api";
+import { Pokemon } from "../../interfaces";
+import { Button, Card, Container, Grid, Image, Text } from "@nextui-org/react";
 
 
 interface Props {
-    id: string
-    name: string,
+    pokemon: Pokemon
 }
 
-const PokemonPage: FC<Props> = (props) => {
+const PokemonPage: NextPage<Props> = ({pokemon}) => {
+
     const router = useRouter();
-    console.log(router.query)
     return (
         <Layout title="Algun pokemon">
-            <p>{props.id} - {props.name}</p>
+           <Grid.Container css={{marginTop: '5px'}} gap={2}>
+                <Grid xs={12} sm={4}>
+                    <Card hoverable css={{padding: '30px'}}>
+                        <Card.Body>
+                            <Card.Image
+                                src={pokemon.sprites.other?.dream_world.front_default || '/no-image.png'}
+                                alt={pokemon.name}
+                                width="100%"
+                                height={200}
+                            />
+                        </Card.Body>
+                    </Card>
+                </Grid>
+                <Grid xs={12} sm={8}>
+                    <Card>
+                        <Card.Header css={{display: 'flex', justifyContent:'space-between'}}>
+                            <Text h1 transform="capitalize"> {pokemon.name} </Text>
+                                <Button color="gradient" ghost>
+                                    Guardar en favoritos
+                                </Button>
+                        </Card.Header>
+                        <Card.Body>
+                            <Text>Sprites: </Text>
+                            <Container display="flex" gap={0}>
+                                    <Image 
+                                        src={pokemon.sprites.front_default}
+                                        alt={pokemon.name}
+                                        width={100}
+                                        height={100}
+                                    />
+                                    <Image 
+                                        src={pokemon.sprites.back_default}
+                                        alt={pokemon.name}
+                                        width={100}
+                                        height={100}
+                                    />
+                                    <Image 
+                                        src={pokemon.sprites.front_shiny}
+                                        alt={pokemon.name}
+                                        width={100}
+                                        height={100}
+                                    />
+                                    <Image 
+                                        src={pokemon.sprites.back_shiny}
+                                        alt={pokemon.name}
+                                        width={100}
+                                        height={100}
+                                    />
+                                </Container>
+                        </Card.Body>
+                    </Card>
+                </Grid>
+           </Grid.Container>
+
         </Layout>
     )
 }
@@ -22,26 +76,22 @@ const PokemonPage: FC<Props> = (props) => {
 
 
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
-   //  const { data } = await  // your fetch function here 
+   const pokemon151 = [...Array(151)].map((value, index) => `${index+ 1}`);
     return {
-        paths: [
-            {
-              params: { id: '1', name:'la bolvva'
-                    
-                }
-            }
-        ],
+        paths: pokemon151.map(id => ({
+            params: {id}
+        })),
         fallback: false
     }
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
-    //const { data } = await  
+export const getStaticProps: GetStaticProps = async ({params}) => {
 
+    const {id} = params as {id: string};
+    const {data} = await pokeApi.get(`/pokemon/${id}`)
     return {
         props: {
-            id: 1,
-            name: 'la bolba'
+            pokemon: data
         }
     }
 }
