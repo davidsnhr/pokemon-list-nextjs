@@ -20,8 +20,13 @@ const onFavorite = (id: number):boolean => {
     return favorites.includes(id);
 }
 
+const pokemones = ():number[] => {
+    return JSON.parse(localStorage.getItem('favorites') || '[]')
+}
+
 const localFavorites = {
     toggleFavorite,
-    onFavorite
+    onFavorite,
+    pokemones
 };
 export default localFavorites
