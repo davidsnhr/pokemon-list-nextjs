@@ -8,14 +8,16 @@ interface LayoutProps {
     children: React.ReactNode
 }
 
+const origin = (typeof window === 'undefined' ? '' : window.location.origin)
+
 export const Layout: FC<LayoutProps> = ({children, title}) => {
     return(
         <>
             <Head>
                 <title>{title || 'PokemonApp'}</title>
-                <meta name="author" content="David Sanchez Hurtado"></meta>
-                <meta name="description" content="Informacion sobre el pokemon xxxx"></meta>
-                <meta name="keywords" content="xxxx, pokemon, pokedex"></meta>
+                <meta property="og:title" content={`Esta es la informacion de ${title}`} />
+                <meta property="og:description" content={`Esta es la pagina sobre ${title}`} />
+                <meta property="og:image" content={`${origin}/img/banner.png`} />
             </Head>
             <Navbar />
             <main style={{
